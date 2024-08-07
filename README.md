@@ -1,2 +1,2 @@
-# dkg-load
+# Dkg Load tests
 Dkg nodes' load tests
