@@ -1,6 +1,6 @@
 ﻿// Copyright (C) 2024 Maxim [maxirmx] Samsonov (www.sw.consulting)
 // All rights reserved.
-// This file is a part of dkg service node
+// This file is a part of dkg load tests
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions
