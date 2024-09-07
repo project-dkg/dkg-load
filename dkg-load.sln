@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dkg-bulk-reg", "dkg-bulk-re
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dkgLibrary", "dkg\dkgLibrary\dkgLibrary.csproj", "{E885278E-566D-4E0F-992F-28C167EB26C3}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dkgCommon", "dkg-common\dkgCommon\dkgCommon.csproj", "{5F8B0FA3-8F5B-4853-870B-45C8A4EC3EDD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{E885278E-566D-4E0F-992F-28C167EB26C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E885278E-566D-4E0F-992F-28C167EB26C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E885278E-566D-4E0F-992F-28C167EB26C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F8B0FA3-8F5B-4853-870B-45C8A4EC3EDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F8B0FA3-8F5B-4853-870B-45C8A4EC3EDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F8B0FA3-8F5B-4853-870B-45C8A4EC3EDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F8B0FA3-8F5B-4853-870B-45C8A4EC3EDD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

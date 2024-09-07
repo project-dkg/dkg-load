@@ -25,14 +25,13 @@
 
 using System.Text;
 using Solnet.Wallet;
-using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
 
 using dkg.group;
 using System.Text.Json;
 
 
-namespace dkg_bulk_reg.Services
+namespace dkg_bulk_reg.Models
 {
     public class BulkNodeConfig
     {

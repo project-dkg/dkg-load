@@ -26,27 +26,29 @@
 
 using System.Diagnostics;
 using System.Net;
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
+using System.Xml.Linq;
+using dkg.vss;
+using dkg_bulk_reg.Models;
+using dkgCommon.Constants;
+using dkgCommon.Models;
 
 namespace dkg_bulk_reg.Services
 {
     public class BulkNodeRegister
     {
         private string ServiceNodeUrl;
-        private HttpClient[] clients = [];
+        private readonly HttpClient client = new();
 
         private int recoverable;
         private int failures;
+        private readonly JsonSerializerOptions jsonSerializerOptions = new() { PropertyNameCaseInsensitive = true };
 
         public BulkNodeRegister(string serviceNodeUrl)
         {
-            ServicePointManager.DefaultConnectionLimit = 2000;
             ServiceNodeUrl = serviceNodeUrl;
-            clients = new HttpClient[5];
-
-            for (int i = 0; i < clients.Length; i++)
-            {
-                clients[i] = new HttpClient();
-            }
         }
         public async Task BulkRegister(BulkNodeConfig[] configs)
         {
@@ -63,7 +65,7 @@ namespace dkg_bulk_reg.Services
 
             for (int i = 0; i < configs.Length; i++)
             {
-                Console.Write($"\rSending request {i+1} of {configs.Length}");
+                Console.Write($"\rSending request {i + 1} of {configs.Length}");
                 tasks.Add(SendRegisterRequestAsync(configs[i]));
             }
 
@@ -77,24 +79,27 @@ namespace dkg_bulk_reg.Services
             elapsed = processwatch.Elapsed;
 
             Console.WriteLine($"All requests completed in {elapsed.TotalMilliseconds} milliseconds.");
-            Console.WriteLine($"Encountered {recoverable} recovered errord and {failures} unrecoverable errors.");
+            Console.WriteLine($"Encountered {recoverable} recovered error(s) and {failures} unrecoverable error(s).");
         }
 
         private async Task SendRegisterRequestAsync(BulkNodeConfig config)
         {
             int attempts = 0;
             bool success = false;
+            StatusResponse? statusResponse = null;
             while (attempts < 3 && !success)
             {
                 try
                 {
-                    HttpResponseMessage response = await clients[config.Index % clients.Length]
-                                                        .PostAsync(ServiceNodeUrl, config.registerRequest);
+                    HttpResponseMessage response = await client
+                                                    .PostAsync($"{ServiceNodeUrl}/api/ops/register", config.registerRequest);
                     if (response.IsSuccessStatusCode)
                     {
+                        string responseContent = await response.Content.ReadAsStringAsync();
+                        //Console.WriteLine($"Response: { responseContent}");
+                        statusResponse = JsonSerializer.Deserialize<StatusResponse>(responseContent, jsonSerializerOptions) ??
+                                                         throw new Exception("statusResponse is null");
                         success = true;
-                        // string responseBody = await response.Content.ReadAsStringAsync();
-                        // Console.WriteLine($"Response: {responseBody}");
                     }
                     else
                     {
@@ -102,16 +107,50 @@ namespace dkg_bulk_reg.Services
                         recoverable++;
                     }
                 }
-                catch (HttpRequestException)
+                catch
                 {
                     attempts++;
                     recoverable++;
                 }
             }
 
-            if (!success)
+            if (!success || statusResponse == null)
             {
                 failures++;
+            }
+            else if (statusResponse.RoundId > 0)
+            {
+                StatusReport statusReport = new(config.PublicKey, config.Name, statusResponse.RoundId, NStatus.WaitingRoundStart);
+                var jsonPayload = JsonSerializer.Serialize(statusReport);
+                var httpContent = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+                attempts = 0;
+                success = false;
+                while (attempts < 3 && !success)
+                {
+                    try
+                    {
+                        HttpResponseMessage response = await client.PostAsync($"{ServiceNodeUrl}/api/ops/status", httpContent);
+                        if (response.IsSuccessStatusCode)
+                        {
+                            string responseContent = await response.Content.ReadAsStringAsync();
+                            success = true;
+                        }
+                        else
+                        {
+                            attempts++;
+                            recoverable++;
+                        }
+                    }
+                    catch
+                    {
+                        attempts++;
+                        recoverable++;
+                    }
+                }
+                if (!success)
+                {
+                    failures++;
+                }
             }
         }
     }

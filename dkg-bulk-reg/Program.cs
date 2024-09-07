@@ -24,6 +24,7 @@
 // POSSIBILITY OF SUCH DAMAGE.
 
 using System.IO.Compression;
+using dkg_bulk_reg.Models;
 using dkg_bulk_reg.Services;
 
 namespace dkg_bulk_reg
@@ -60,7 +61,8 @@ namespace dkg_bulk_reg
                 // Read and parse the file to generate BulkNodeConfig array
                 BulkNodeConfig[] bulkNodeConfigs = ReadBulkNodeConfigsFromFile(fileName);
                 Console.WriteLine($"\rRead {bulkNodeConfigs.Length} wallets from file.");
-                var registrar = new BulkNodeRegister("https://dkg.samsonov.net:8081/api/nodes/register");
+                var registrar = new BulkNodeRegister("https://dkg.samsonov.net:8081");
+                //var registrar = new BulkNodeRegister("http://localhost:8080");
                 await registrar.BulkRegister(bulkNodeConfigs);
             }
             catch (Exception ex)

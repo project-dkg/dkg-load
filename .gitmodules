@@ -1,3 +1,6 @@
 [submodule "dkg"]
 	path = dkg
 	url = https://github.com/maxirmx/dkg
+[submodule "dkg-common"]
+	path = dkg-common
+	url = git@github.com:project-dkg/dkg-common.git
