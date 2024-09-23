@@ -96,7 +96,7 @@ namespace dkg_bulk_reg.Services
                     if (response.IsSuccessStatusCode)
                     {
                         string responseContent = await response.Content.ReadAsStringAsync();
-                        //Console.WriteLine($"Response: { responseContent}");
+                        // Console.WriteLine($"Response: { responseContent}");
                         statusResponse = JsonSerializer.Deserialize<StatusResponse>(responseContent, jsonSerializerOptions) ??
                                                          throw new Exception("statusResponse is null");
                         success = true;
@@ -120,7 +120,7 @@ namespace dkg_bulk_reg.Services
             }
             else if (statusResponse.RoundId > 0)
             {
-                StatusReport statusReport = new(config.PublicKey, config.Name, statusResponse.RoundId, NStatus.WaitingRoundStart);
+                StatusReport statusReport = new(config.Address, config.Name, statusResponse.RoundId, NStatus.WaitingRoundStart);
                 var jsonPayload = JsonSerializer.Serialize(statusReport);
                 var httpContent = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
                 attempts = 0;
@@ -133,6 +133,7 @@ namespace dkg_bulk_reg.Services
                         if (response.IsSuccessStatusCode)
                         {
                             string responseContent = await response.Content.ReadAsStringAsync();
+                            // Console.WriteLine($"Response: {responseContent}");
                             success = true;
                         }
                         else
